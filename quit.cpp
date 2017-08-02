@@ -138,6 +138,7 @@ int main(int argc, char *argv[])
   struct sockaddr_in serv_addr, clnt_addr;
   char ProductName[] = "QuiT";
   char Version[] = "v1.1.7";
+  char Author[]="Bombo";
 #ifdef WIN32
   NOTIFYICONDATA idata;
   static const GUID myGUID = {0x23977b55, 0x10e0, 0x4041, {0xb8, 0x62, 0xb1, 0x95, 0x41, 0x96, 0x36, 0x69}};
@@ -216,7 +217,7 @@ int main(int argc, char *argv[])
     exit(2);
   }
 
-  fprintf(stderr, "%s %s\n", ProductName, Version);
+  fprintf(stderr, "%s %s by %s\n", ProductName, Version, Author);
   fprintf(stderr, "server is ready: port %d\n", PORTNUM);
 
   if(listen(s, 20) == -1)
@@ -324,7 +325,6 @@ ProcessingThread(void *lpParams)
 	char *ptr, *port_ptr, *ptr_del;
 	struct id_value_data_struct id_value_data;
 	struct table_column *tab_col[MAX_COLUMNS_IN_TABLE]; //накладывается ограничение на количество столбцов в таблице
-//	char Author[]="Bombo";
 
 	fselects = false; //начальная инициализация флага "таблица содержит поля выбора"
 	fdynamic = false; // -||- "таблица содержит поля выборки"
@@ -334,7 +334,6 @@ ProcessingThread(void *lpParams)
 	ns = *((SOCKET *)lpParams);
 	//area_width = 20; //ширина столбца в символах
 	max = 0;
-//	Author[0] = 'B'; //non warning
 
 	if(!mysql_init(&mysql))
 	{
