@@ -172,7 +172,7 @@ int main(int argc, char *argv[])
 		  }
 		  if(strncmp(argv[k], "-h", 2) == 0)
 		  {
-			  fprintf(stderr, "%s %s\nUsage: %s [-h] [-p port] [-s]\n\n\t\t-h\t\thelp (this message)\n\t\t-p port\t\tport number (is 7770 by default)\n\t\t-s\t\tsilent mode\n\n", ProductName, Version, ProductName);
+			  fprintf(stderr, "%s %s\nUsage: %s [-h] [-p port] [-s]\n\n\t\t-h\t\thelp (this message)\n\t\t-p port\t\tport number (7770 is default)\n\t\t-s\t\tsilent mode\n\n", ProductName, Version, ProductName);
 			  exit(0);
 		  }
 	  }
