@@ -22,14 +22,14 @@
 			for(i = 0; i < column_index; ++i)\
 			{\
 				if(columns_sql_buff[i] != NULL)\
-					delete columns_sql_buff[i];\
+				delete columns_sql_buff[i];\
 			}\
 			for(i = 0; i < value_of_select_index; ++i)\
 			{\
 				if(value_of_select[i][0] != NULL)\
-					delete value_of_select[i][0];\
+				delete value_of_select[i][0];\
 				if(value_of_select[i][1] != NULL)\
-					delete value_of_select[i][1];\
+				delete value_of_select[i][1];\
 			}
 #define FREE_DATA_OF_COLUMNS	for(i = 0; i < cols_num; ++i)\
 				{\
@@ -208,7 +208,7 @@ int main(int argc, char *argv[])
   {
     fprintf(stderr, "error: bind()\n");
 #ifdef LINUX
-		shutdown(s, SHUT_RDWR);
+    shutdown(s, SHUT_RDWR);
 #endif
     closesocket(s);
     exit(2);
@@ -221,28 +221,28 @@ int main(int argc, char *argv[])
   {
     fprintf(stderr, "error: listen()\n");
 #ifdef LINUX
-		shutdown(s, SHUT_RDWR);
+    shutdown(s, SHUT_RDWR);
 #endif
     closesocket(s);
     exit(3);
   }
-								
+
   printf("begin..\n");
 
   while(1)
   {
     int addrlen;
-  	DWORD dwThread;
+    DWORD dwThread;
 
     memset(&clnt_addr, 0, sizeof(clnt_addr));
     addrlen = sizeof(clnt_addr);
 
-	//ждём соединения
+    //ждём соединения
     if((ns = accept(s, (struct sockaddr *) &clnt_addr, (socklen_t *)&addrlen)) == -1)
     {
       fprintf(stderr, "error: accept()\n");
 #ifdef LINUX
-		shutdown(s, SHUT_RDWR);
+      shutdown(s, SHUT_RDWR);
 #endif
       closesocket(s);
       exit(4);
@@ -300,7 +300,7 @@ ProcessingThread(void *lpParams)
 	SOCKET ns, check_s;
 	int nport;
 	struct sockaddr_in clnt_addr;
-  struct hostent *hp;
+	struct hostent *hp;
 	MYSQL mysql;
 	MYSQL_RES *res, *res_tbl, *res_col, *res_srv, *res_dsc;
 	MYSQL_ROW row, row_tbl, row_col, row_srv, row_dsc;
@@ -331,33 +331,32 @@ ProcessingThread(void *lpParams)
 
 	ns = *((SOCKET *)lpParams);
 	area_width = 20; //ширина столбца в символах
-  max = 0;
-
-  Author[0] = 'B'; //non warning
+	max = 0;
+	Author[0] = 'B'; //non warning
 
 	if(!mysql_init(&mysql))
 	{
 	  fprintf(stderr, "error: mysql_init()\n");
 	  closesocket(ns);
-#ifdef WIN32	  
+#ifdef WIN32
 	  ExitThread(1);
 #else
-    pthread_exit(NULL);
-#endif	  
+	  pthread_exit(NULL);
+#endif
 	}
 
-	if(!(mysql_real_connect(&mysql, 
-						  "localhost",
-						  "picsuser", "passwd", "quit", 0, NULL, CLIENT_FOUND_ROWS)))
-	{	
+	if(!(mysql_real_connect(&mysql,
+				"localhost",
+				"picsuser", "passwd", "quit", 0, NULL, CLIENT_FOUND_ROWS)))
+	{
 		fprintf(stderr, "error: connection to DB (%s)\n", mysql_error(&mysql));
 		mysql_close(&mysql);
 		closesocket(ns);
-#ifdef WIN32	  
+#ifdef WIN32
 	  ExitThread(6);
 #else
-    pthread_exit(NULL);
-#endif	  
+	  pthread_exit(NULL);
+#endif
 	}
 	else
 	fprintf(stderr, "opened!\n");
@@ -375,51 +374,51 @@ ProcessingThread(void *lpParams)
 	nsumbytes = 0;
 	data_size = 0;
 
-  nbytes = recv(ns, buf+nsumbytes, sizeof(buf), 0);
+	nbytes = recv(ns, buf+nsumbytes, sizeof(buf), 0);
 	nsumbytes += nbytes;
 	if(nbytes <= 0)
 	{
 		fprintf(stderr, "nbytes <= 0\n");
-		mysql_close(&mysql);      
+		mysql_close(&mysql);
 		closesocket(ns);
-#ifdef WIN32	  
+#ifdef WIN32
 	  ExitThread(60);
 #else
     pthread_exit(NULL);
-#endif	  
+#endif
 	}
   fprintf(stderr, "\n\n%s\n\n", buf); //отладка!!!
   if(strncmp(buf, "POST ", 5) == 0)
   {
-	  ptr = strstr(buf, "Content-Length: ");
-	  if(ptr != NULL)
-	  {
+	ptr = strstr(buf, "Content-Length: ");
+	if(ptr != NULL)
+	{
 	    ptr_del = strstr(buf, "\r\n\r\n");
 	    if(ptr_del != NULL)
 	    {
-		 		data_size = (ptr_del-buf)/sizeof(char)+4+atoi(ptr+16);
-		 	}
-	  }
-//	  fprintf(stderr, "\n\natoi(ptr+16)=%d\nlen=%d\ndata_size=%d\n\n", atoi(ptr+16),strlen(buf)-((ptr_del-buf)/sizeof(char)+4),data_size); //отладка!!!
+		data_size = (ptr_del-buf)/sizeof(char)+4+atoi(ptr+16);
+	    }
+	}
+//	fprintf(stderr, "\n\natoi(ptr+16)=%d\nlen=%d\ndata_size=%d\n\n", atoi(ptr+16),strlen(buf)-((ptr_del-buf)/sizeof(char)+4),data_size); //отладка!!!
 
-		while((unsigned int)nsumbytes < sizeof(buf) && (unsigned int)nsumbytes < (unsigned int)data_size)
-		{
-			nbytes = recv(ns, buf+nsumbytes, sizeof(buf), 0);
-			nsumbytes += nbytes;
-		}
+	while((unsigned int)nsumbytes < sizeof(buf) && (unsigned int)nsumbytes < (unsigned int)data_size)
+	{
+		nbytes = recv(ns, buf+nsumbytes, sizeof(buf), 0);
+		nsumbytes += nbytes;
+	}
   }
-  
+
 //	fprintf(stderr, "\nrecv_buf = %s\n\n\n", buf); //отладка!!!
 	if(nsumbytes <= 0)
 	{
 		fprintf(stderr, "nsumbytes <= 0\n");
 		mysql_close(&mysql);      
 		closesocket(ns);
-#ifdef WIN32	  
+#ifdef WIN32
 	  ExitThread(60);
 #else
-    pthread_exit(NULL);
-#endif	  
+	  pthread_exit(NULL);
+#endif
 	}
 	if(strncmp(buf, "POST ", 5) == 0)
 	{
@@ -428,7 +427,7 @@ ProcessingThread(void *lpParams)
 	  memset(main_table, 0, sizeof(main_table));
 	  for(i = 0; ptr[i] != ' '; ++i)
 	  {
-		  main_table[i] = ptr[i];
+	    main_table[i] = ptr[i];
 	  }
 
 	  //задаём название основной таблицы как название таблицы для перехода
@@ -441,7 +440,7 @@ ProcessingThread(void *lpParams)
 		len = 0;
 	  else
 		len = atoi(ptr);
-	  
+
 	  //если сообщение не пустое - производим его разбор
 	  //менять порядок разбора строго не рекомендуется
 	  if(len > 0)
@@ -476,7 +475,7 @@ ProcessingThread(void *lpParams)
 			}
 		}
 
-	    memset(cmd, 0, sizeof(cmd));
+		memset(cmd, 0, sizeof(cmd));
 		if(get_some_value(ptr, "next_table_name", cmd)) //получаем имя таблицы для перехода
 		{
 			if(strlen(cmd) > 0)
@@ -494,7 +493,7 @@ ProcessingThread(void *lpParams)
 			}
 		}
 
-	    memset(cmd, 0, sizeof(cmd));
+		memset(cmd, 0, sizeof(cmd));
 		memset(command_list, 0, sizeof(command_list));
 		if(get_some_value(ptr, "command_list", cmd)) //получаем список команд
 		{
@@ -510,9 +509,9 @@ ProcessingThread(void *lpParams)
 		
 		while(len > 0)
 		{
-	      len = get_id_value(ptr, &id_value_data); //функция определяет id изменяемого элемента, имя столбца и новое значение. 
-		                                           //возвращает оставшуюся длину сообщения.
-												   //заодно убирает %XX, переделывает кавычки, ищет таблицу для перехода.
+		  len = get_id_value(ptr, &id_value_data); //функция определяет id изменяемого элемента, имя столбца и новое значение.
+							   //возвращает оставшуюся длину сообщения.
+							   //заодно убирает %XX, переделывает кавычки, ищет таблицу для перехода.
 //		  fprintf(stderr, "len = %d\n", len);
 		  if(len < 0) continue;
 		  ptr = ptr + id_value_data.index;
@@ -523,7 +522,7 @@ ProcessingThread(void *lpParams)
 			  fprintf(stderr, "checking...\n");
 			  memset(main_server, 0, sizeof(main_server));
 			  strncpy(main_server, id_value_data.value, strlen(id_value_data.value));
-			  
+
 			  //создаём сокет
 			  if((check_s = socket(AF_INET, SOCK_STREAM, 0)) == -1)
 			  {
@@ -531,13 +530,13 @@ ProcessingThread(void *lpParams)
 				mysql_close(&mysql);      
 				closesocket(ns);
 			    fprintf(stderr, "The check is failed\n");
-#ifdef WIN32	  
+#ifdef WIN32
 			  ExitThread(1);
 #else
-		    pthread_exit(NULL);
+			  pthread_exit(NULL);
 #endif
 			  }
-			  
+
 			  memset(&clnt_addr, 0, sizeof(clnt_addr));
 			  clnt_addr.sin_family = AF_INET;
 			  clnt_addr.sin_addr.s_addr = INADDR_ANY;
@@ -565,10 +564,10 @@ ProcessingThread(void *lpParams)
 				  delete [] id_value_data.name;
 				  delete [] id_value_data.value;
 				  fprintf(stderr, "error: gethostbyname()\n");
-			      fprintf(stderr, "The check is failed\n");
+				  fprintf(stderr, "The check is failed\n");
 				  closesocket(ns);
 //				  ExitThread(1);
-//			    pthread_exit(NULL);
+//				  pthread_exit(NULL);
 				  break;
 			  }
 
@@ -604,11 +603,11 @@ ProcessingThread(void *lpParams)
 		  }
 		  else
 		  {
- 			  sprintf_s(cmd, sizeof(cmd), "UPDATE %s SET %s=\"%s\" WHERE id=%d", main_table, id_value_data.name, id_value_data.value, id_value_data.id);
+			  sprintf_s(cmd, sizeof(cmd), "UPDATE %s SET %s=\"%s\" WHERE id=%d", main_table, id_value_data.name, id_value_data.value, id_value_data.id);
 			  fprintf(stderr, "%s\n", cmd);
 			  delete [] id_value_data.name;
 			  delete [] id_value_data.value;
- 			  if(mysql_query(&mysql, cmd) != 0)
+			  if(mysql_query(&mysql, cmd) != 0)
 			  {
 				fprintf(stderr, "error mysql_query() : %s\n", mysql_error(&mysql));
 			  }
@@ -644,9 +643,9 @@ ProcessingThread(void *lpParams)
 	}
 
 	//заменяем основную таблицу на таблицу для перехода
-    memset(main_table, 0, sizeof(main_table));
-    strcpy_s(main_table, sizeof(main_table), next_table);
-	
+	memset(main_table, 0, sizeof(main_table));
+	strcpy_s(main_table, sizeof(main_table), next_table);
+
 	memset(cmd, 0, sizeof(cmd));
 	//здесь получаем описание сервера
 	sprintf_s(cmd, sizeof(cmd), "SELECT id,addr,default_index,col_width,col_width_min,addr_default FROM server_info");
@@ -677,7 +676,7 @@ ProcessingThread(void *lpParams)
 	else
 	{
 		sprintf_s(cmd, sizeof(cmd), "error database: wrong table 'server_info'");
-	    error_thread_exit(&mysql, &ns, cmd);
+		error_thread_exit(&mysql, &ns, cmd);
 	}
 	
 
@@ -685,15 +684,15 @@ ProcessingThread(void *lpParams)
 	{
 	  delete [] id_value_data.name;
 	  delete [] id_value_data.value;
-#ifdef LINUX	  
+#ifdef LINUX
 	  shutdown(ns, SHUT_RDWR);
-#endif	  
+#endif
 	  closesocket(ns);
 #ifdef WIN32
 		ExitThread(100);
 #else
 		pthread_exit(NULL);
-#endif	  
+#endif
 	}
 
 	if(strncmp(buf, "GET /", 5) == 0)
@@ -793,12 +792,12 @@ ORDER BY a.col_num", main_table);
 	{
 	    mysql_free_result(res_srv);
 	    mysql_free_result(res_col);
-		sprintf_s(head, sizeof(head), "error database: no such table '%s' in tab_columns", main_table);
+	    sprintf_s(head, sizeof(head), "error database: no such table '%s' in tab_columns", main_table);
 	    error_thread_exit(&mysql, &ns, head);
 	}
 	cols_num = i; //запоминаем количество столбцов в выводимой таблице
 
-    mysql_free_result(res_col); //можно, т.к. все данные уже в кэше
+	mysql_free_result(res_col); //можно, т.к. все данные уже в кэше
 
 	//определим ячейки (столбцы), требующие подготовки к выводу
 	for(i = 0; i < cols_num; ++i)
@@ -1195,7 +1194,7 @@ ORDER BY %s", row_tbl[2], row_tbl[3], row_tbl[1], row_tbl[2]);
 							{
 								//если ячейки с индексом и именем совпадают
 /*
-								sprintf_s(cmd, sizeof(cmd), "\
+sprintf_s(cmd, sizeof(cmd), "\
 SELECT %s,%s \
 FROM %s \
 GROUP BY %s", row_tbl[2], row_tbl[3], row_tbl[1], row_tbl[2], row_tbl[2]);
@@ -1374,11 +1373,11 @@ WHERE b.tab_name='%s'", main_table);
 	{
 		//выход
 		FREE_DATA_OF_COLUMNS;
-//  	    mysql_free_result(res);
+//		mysql_free_result(res);
 		mysql_free_result(res_srv);
-//  	    mysql_free_result(res_col);
+//		mysql_free_result(res_col);
 		sprintf_s(head, sizeof(head), "error database: no such table '%s' in tab_info", main_table);
-        error_thread_exit(&mysql, &ns, head);
+		error_thread_exit(&mysql, &ns, head);
 	}
 
 	if(fdelrow)
@@ -1387,7 +1386,6 @@ WHERE b.tab_name='%s'", main_table);
 		{
 			strncpy(ptr_del+78, "no ", 3);
 		}
-
 	}
 
 //--------------------------------------------------------------------ВЫВОД ЗНАЧЕНИЙ ТАБЛИЦЫ---------------------------------------------
@@ -1413,7 +1411,6 @@ WHERE b.tab_name='%s'", main_table);
 			}
 
 			strcat_s(buf, sizeof(buf)-strlen(buf), row_tbl[5]); //конец строки
-
 
 			//здесь получаем данные из таблицы main_table
 			//генерируем запрос на основе полученного кэша (который определяет порядок столбцов)
@@ -1452,14 +1449,14 @@ WHERE b.tab_name='%s'", main_table);
 			  num = 0;
 			  mysql_free_result(res_srv);
 			  mysql_free_result(res_col);
- 			  mysql_error_thread_exit(&mysql, &ns);
+			  mysql_error_thread_exit(&mysql, &ns);
 			}
 			else
 			{
 			  res = mysql_store_result(&mysql);
 			  num = mysql_affected_rows(&mysql);
 			}
-			  
+
 			i = 1; //номер строки (!)
 			ffirst = true;
 			if(num > 0)
@@ -1474,19 +1471,20 @@ WHERE b.tab_name='%s'", main_table);
 				}
 
 				memset(cmd, 0, sizeof(cmd));
+				//TODO: enum
 				//формируем строку таблицы
 				//типы: 0-нередактируемый
-				//      1-стандартная редактируемая строка
-				//			3-выбор
-				//			4-картинка
-				//			5-кнопка
-				//			7-да/нет
-				//			8-фиксатор
-				//			9-выборка
-				//			10-пароль
-				//			11-стиль
-				//      12-поле
-				//			13-замок
+				//	1-стандартная редактируемая строка
+				//	3-выбор
+				//	4-картинка
+				//	5-кнопка
+				//	7-да/нет
+				//	8-фиксатор
+				//	9-выборка
+				//	10-пароль
+				//	11-стиль
+				//	12-поле
+				//	13-замок
 				sprintf_s(cmd, sizeof(cmd), "%s<td align=center>%d</td>\n", row_tbl[4], i); //начало строки и первый столбец (номер строки)
 
 				max = 0;
@@ -2376,7 +2374,7 @@ WHERE b.tab_name='%s'", main_table);
 	send_data = new char[strlen(buf)+strlen(cmd)+strlen(head)+16];
 	memset(send_data, 0, strlen(buf)+strlen(cmd)+strlen(head)+16);
 	sprintf_s(send_data, strlen(buf)+15+strlen(cmd)+strlen(head), "%s%x\r\n%s%s\r\n0\r\n\r\n", head, strlen(buf)+strlen(cmd), buf, cmd);
-	//	fprintf(stderr, "%s\n", send_data); //отладка
+	//fprintf(stderr, "%s\n", send_data); //отладка
 	size_to_send = strlen(send_data);
 	nbytes_sent = 0;
 	while(nbytes_sent < size_to_send)
@@ -2398,9 +2396,9 @@ WHERE b.tab_name='%s'", main_table);
 #endif
 	closesocket(ns);
 #ifdef WIN32
-  ExitThread(0);
+	ExitThread(0);
 #else
-  pthread_exit(NULL);
+	pthread_exit(NULL);
 #endif
 }
 
@@ -2416,14 +2414,14 @@ void mysql_error_thread_exit(MYSQL * const mysql, SOCKET * const ns)
 	send(*ns, head, strlen(head), 0);
 	Sleep(500);
 #ifdef LINUX
-  shutdown(*ns, SHUT_RDWR);
+	shutdown(*ns, SHUT_RDWR);
 #endif
 	closesocket(*ns);
 	mysql_close(mysql);
 #ifdef WIN32
-	  ExitThread(10);
+	ExitThread(10);
 #else
-    pthread_exit(NULL);
+	pthread_exit(NULL);
 #endif
 }
 
@@ -2437,14 +2435,14 @@ void error_thread_exit(MYSQL * const mysql, SOCKET * const ns, char const * cons
 	send(*ns, head, strlen(head), 0);
 	Sleep(500);
 #ifdef LINUX
-  shutdown(*ns, SHUT_RDWR);
+	shutdown(*ns, SHUT_RDWR);
 #endif
 	closesocket(*ns);
 	mysql_close(mysql);
 #ifdef WIN32
-	  ExitThread(10);
+	ExitThread(10);
 #else
-    pthread_exit(NULL);
+	pthread_exit(NULL);
 #endif
 }
 
@@ -2474,14 +2472,14 @@ int get_some_value(char * const ptr, char const * const name, char * const value
 	char ch[3];
 	int val;
 
-    if(name == NULL)
-		return 0;
+	if(name == NULL)
+	    return 0;
 
-    if(value == NULL)
-		return 0;
+	if(value == NULL)
+	    return 0;
 
 	len = 0;
-    pindex = ptr;
+	pindex = ptr;
 	while(pindex != NULL)
 	{
 		pindex = strstr(pindex, name);
@@ -2595,7 +2593,7 @@ int get_id_value(char * const ptr, id_value_data_struct * const id_value_data)
 	len = 0;
 
 	j = strlen(ptr);
-    //находим стык переданных значений
+	//находим стык переданных значений
 	for(i = 0; i < j; ++i)
 	{
 		if(ptr[i] == '+')
@@ -2615,7 +2613,7 @@ int get_id_value(char * const ptr, id_value_data_struct * const id_value_data)
 	buf = new char[index*2+1]; //этого должно хватить с лихвой
 	memset(buf, 0, index*2+1);
 	//убираем %XX
-  for(i = 0, j = 0; i < index; ++i, ++j)
+	for(i = 0, j = 0; i < index; ++i, ++j)
 	{
 		if(ptr[i] != '%')
 		{
@@ -2674,21 +2672,21 @@ void run_commands(char * const cmd_list, MYSQL * const pmysql, SOCKET * const ns
 	char *ptr;
 
 	if(cmd_list == NULL)
-		return;
+	    return;
 	if(strlen(cmd_list) == 0)
-		return;
+	    return;
 	if(pmysql == NULL)
-		return;
+	    return;
 
 	ptr = strtok(cmd_list, ",");
 	while(ptr != NULL)
 	{
-		if(strncmp(ptr, "create_new_table", strlen(ptr)) == 0) //если присутствует команда 'создать новую таблицу'
-		{
-			create_new_table(pmysql, ns);
-		}
+	    if(strncmp(ptr, "create_new_table", strlen(ptr)) == 0) //если присутствует команда 'создать новую таблицу'
+	    {
+		create_new_table(pmysql, ns);
+	    }
 
-		ptr = strtok(NULL, ",");
+	    ptr = strtok(NULL, ",");
 	}
 }
 
@@ -4146,9 +4144,9 @@ VALUES('id',0,'<td><textarea form=\"frm\" id=\"%s_%d\" name=\"%s[%d]\" rows=%d c
 		}
 	}
 
-//	fprintf(stderr, "%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n", 
-//					main_tab,tab_info_name,tab_info_values,tab_columns_name,tab_columns_values,
-//					all_tables_name,all_tables_values,tab_default_name,tab_default_values);
+//	fprintf(stderr, "%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n%s\n\n",
+//			 main_tab,tab_info_name,tab_info_values,tab_columns_name,tab_columns_values,
+//			 all_tables_name,all_tables_values,tab_default_name,tab_default_values);
 
 	FREE_ALL_VARS;
 	return;
