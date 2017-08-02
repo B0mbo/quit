@@ -147,20 +147,22 @@ int main(int argc, char *argv[])
   pthread_attr_t attr;
 #endif
 
+#ifdef WIN32
   bool fsilentmode;
-
   fsilentmode = false;
-
+#endif
 
   //обработка аргументов и помощь по программе
   if(argc > 1)
   {
 	  for(k = 1; k < argc; ++k)
 	  {
+#ifdef WIN32
 		  if(strncmp(argv[k], "-s", 2) == 0)
 		  {
 			fsilentmode = true;
 		  }
+#endif
 		  if(strncmp(argv[k], "-p", 2) == 0 && argc > k)
 		  {
 			  nport = atoi(argv[k+1]);
@@ -305,24 +307,24 @@ ProcessingThread(void *lpParams)
 	MYSQL_RES *res, *res_tbl, *res_col, *res_srv, *res_dsc;
 	MYSQL_ROW row, row_tbl, row_col, row_srv, row_dsc;
 	int num, num_tbl, num_col, num_srv, num_dsc;
-	char head[MAX_HEAD_SIZE];		//используется в качестве буфера!!!
-	char cmd[MAX_CMD_SIZE];		//буфер строки таблицы
-	char buf[MAX_BUFF_SIZE];		//буфер генерируемого html-документа
-	char main_table[256];	//буфер для имени текущей таблицы
+	char head[MAX_HEAD_SIZE];//используется в качестве буфера!!!
+	char cmd[MAX_CMD_SIZE];	 //буфер строки таблицы
+	char buf[MAX_BUFF_SIZE]; //буфер генерируемого html-документа
+	char main_table[256];	 //буфер для имени текущей таблицы
 	char main_server[256];   //буфер для имени хоста
-	char next_table[256];	//буфер имени таблицы для перехода
+	char next_table[256];	 //буфер имени таблицы для перехода
 	char command_list[2048]; //буфер для списка команд
-	int nbytes, nsumbytes;		//количество принятых/отправленных байт
+	int nbytes, nsumbytes;	 //количество принятых/отправленных байт
 	char *send_data;
 	size_t nbytes_sent, size_to_send;
 	bool ffirst, fselects, fdynamic, fnodelim, fdelrow, fnewtable;
 	int i, j, k, l, m, cols_num, index_row;
-	int area_width, area_width_min;
+	//int area_width, area_width_min;
 	int len, max, data_size;
 	char *ptr, *port_ptr, *ptr_del;
 	struct id_value_data_struct id_value_data;
 	struct table_column *tab_col[MAX_COLUMNS_IN_TABLE]; //накладывается ограничение на количество столбцов в таблице
-	char Author[]="Bombo";
+//	char Author[]="Bombo";
 
 	fselects = false; //начальная инициализация флага "таблица содержит поля выбора"
 	fdynamic = false; // -||- "таблица содержит поля выборки"
@@ -330,9 +332,9 @@ ProcessingThread(void *lpParams)
 	fnewtable = false;// -||- "создаётся новая таблица"
 
 	ns = *((SOCKET *)lpParams);
-	area_width = 20; //ширина столбца в символах
+	//area_width = 20; //ширина столбца в символах
 	max = 0;
-	Author[0] = 'B'; //non warning
+//	Author[0] = 'B'; //non warning
 
 	if(!mysql_init(&mysql))
 	{
@@ -669,8 +671,8 @@ ProcessingThread(void *lpParams)
 				error_thread_exit(&mysql, &ns, cmd);
 			}
 		}
-		area_width = atoi(row_srv[3]);
-		area_width_min = atoi(row_srv[4]);
+		//area_width = atoi(row_srv[3]);
+		//area_width_min = atoi(row_srv[4]);
 //		fprintf(stderr, "cols_num=%d, %d, %d,\n%s, %s\n", cols_num, area_width, area_width_min, row_srv[3], row_srv[4]);
 	}
 	else
@@ -734,7 +736,7 @@ ORDER BY a.col_num", main_table);
 	}
 	if(num_col > 0)
 	{
-		memset(tab_col, NULL, sizeof(tab_col));
+		memset(tab_col, 0, sizeof(tab_col));
 		i = 0;
 		//получаем данные о столбцах и сохраняем всё в кэш
 		while( (row_col = mysql_fetch_row(res_col)) != NULL)
@@ -1529,7 +1531,7 @@ WHERE b.tab_name='%s'", main_table);
 						case 12: //поле
 							if(row[j] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d size=%d onChange=\"myreq('%s_%d')\" type='text' value='%s'></td>",
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld size=%d onChange=\"myreq('%s_%d')\" type='text' value='%s'></td>",
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
@@ -1557,7 +1559,7 @@ WHERE b.tab_name='%s'", main_table);
 						case 13: //замок
 							if(row[j] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d size=%d onChange=\"myreq('%s_%d')\" type='text' disabled='disabled' value='%s'></td>",
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld size=%d onChange=\"myreq('%s_%d')\" type='text' disabled='disabled' value='%s'></td>",
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
@@ -1802,7 +1804,7 @@ WHERE b.tab_name='%s'", main_table);
 						case 10: //пароль
 							if(row[j] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d cols=%d onChange=\"myreq('%s_%d')\" type='password' value='%s'></td>",
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld cols=%d onChange=\"myreq('%s_%d')\" type='password' value='%s'></td>",
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
@@ -1811,7 +1813,7 @@ WHERE b.tab_name='%s'", main_table);
 																					 tab_col[j]->col_size,//15, //ширина
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
-																					 strlen(row[j])>0?"---XpeH---":"");
+																					 strlen(row[j])>0?"---XP---":"");
 							}
 							else
 							{
@@ -1857,7 +1859,7 @@ WHERE b.tab_name='%s'", main_table);
 						strcat_s(head, sizeof(head)-strlen(head), "Connection: keep-alive\r\n\r\n");
 						send_data = new char[strlen(buf)+strlen(head)+16];
 						memset(send_data, 0, strlen(buf)+strlen(head)+16);
-						sprintf_s(send_data, strlen(buf)+strlen(head)+15, "%s%x\r\n%s\r\n", head, strlen(buf), buf);
+						sprintf_s(send_data, strlen(buf)+strlen(head)+15, "%s%x\r\n%s\r\n", head, (unsigned int)strlen(buf), buf);
 						ffirst = false;
 					}
 					else
@@ -1865,7 +1867,7 @@ WHERE b.tab_name='%s'", main_table);
 						//отправляем следующую порцию ("[размер (hex)]\r\n[buf]")
 						send_data = new char[strlen(buf)+16];
 						memset(send_data, 0, strlen(buf)+16);
-						sprintf_s(send_data, strlen(buf)+15, "%x\r\n%s\r\n", strlen(buf), buf);
+						sprintf_s(send_data, strlen(buf)+15, "%x\r\n%s\r\n", (unsigned int)strlen(buf), buf);
 					}
 
 					memset(buf, 0, sizeof(buf)); //освобождаем буфер
@@ -1996,7 +1998,7 @@ WHERE b.tab_name='%s'", main_table);
 						case 12: //поле
 							if(row[1] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d width=%d onChange=\"myreq('%s_%d')\" type='text' value='%s'></td>",
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld width=%d onChange=\"myreq('%s_%d')\" type='text' value='%s'></td>",
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
@@ -2024,7 +2026,7 @@ WHERE b.tab_name='%s'", main_table);
 						case 13: //замок
 							if(row[1] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d width=%d onChange=\"myreq('%s_%d')\" type='text' disabled='disabled' value='%s'></td>",
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld width=%d onChange=\"myreq('%s_%d')\" type='text' disabled='disabled' value='%s'></td>",
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
@@ -2267,7 +2269,7 @@ WHERE b.tab_name='%s'", main_table);
 						case 10: //пароль
 							if(row[1] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d cols=%d onChange=\"myreq('%s_%d')\" type='password' value='%s'></td>", tab_col[j]->name,
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld cols=%d onChange=\"myreq('%s_%d')\" type='password' value='%s'></td>", tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
@@ -2275,7 +2277,7 @@ WHERE b.tab_name='%s'", main_table);
 																					 tab_col[j]->col_size,//15, //ширина
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
-																					 strlen(row[1])>0?"---XpeH---":"");
+																					 strlen(row[1])>0?"---XP---":"");
 							}
 							else
 							{
@@ -2321,7 +2323,7 @@ WHERE b.tab_name='%s'", main_table);
 						strcat_s(head, sizeof(head)-strlen(head), "Connection: keep-alive\r\n\r\n");
 						send_data = new char[strlen(buf)+strlen(head)+16];
 						memset(send_data, 0, strlen(buf)+strlen(head)+16);
-						sprintf_s(send_data, strlen(buf)+strlen(head)+15, "%s%x\r\n%s\r\n", head, strlen(buf), buf);
+						sprintf_s(send_data, strlen(buf)+strlen(head)+15, "%s%x\r\n%s\r\n", head, (unsigned int)strlen(buf), buf);
 						ffirst = false;
 					}
 					else
@@ -2329,7 +2331,7 @@ WHERE b.tab_name='%s'", main_table);
 						//отправляем следующую порцию ("[размер (hex)]\r\n[buf]")
 						send_data = new char[strlen(buf)+16];
 						memset(send_data, 0, strlen(buf)+16);
-						sprintf_s(send_data, strlen(buf)+15, "%x\r\n%s\r\n", strlen(buf), buf);
+						sprintf_s(send_data, strlen(buf)+15, "%x\r\n%s\r\n", (unsigned int)strlen(buf), buf);
 					}
 
 					memset(buf, 0, sizeof(buf)); //освобождаем буфер
@@ -2373,7 +2375,7 @@ WHERE b.tab_name='%s'", main_table);
 
 	send_data = new char[strlen(buf)+strlen(cmd)+strlen(head)+16];
 	memset(send_data, 0, strlen(buf)+strlen(cmd)+strlen(head)+16);
-	sprintf_s(send_data, strlen(buf)+15+strlen(cmd)+strlen(head), "%s%x\r\n%s%s\r\n0\r\n\r\n", head, strlen(buf)+strlen(cmd), buf, cmd);
+	sprintf_s(send_data, strlen(buf)+15+strlen(cmd)+strlen(head), "%s%x\r\n%s%s\r\n0\r\n\r\n", head, (unsigned int)(strlen(buf)+strlen(cmd)), buf, cmd);
 	//fprintf(stderr, "%s\n", send_data); //отладка
 	size_to_send = strlen(send_data);
 	nbytes_sent = 0;
@@ -2410,7 +2412,7 @@ void mysql_error_thread_exit(MYSQL * const mysql, SOCKET * const ns)
 	sprintf_s(cmd, sizeof(cmd), "error mysql_query() : %s", mysql_error(mysql));
 	fprintf(stderr, "%s\n", cmd);
 	//выход (либо сообщение об ошибке)
-	sprintf_s(head, sizeof(head), "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=windows-1251\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n%x\r\n%s\r\n0\r\n\r\n", strlen(cmd), cmd);
+	sprintf_s(head, sizeof(head), "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=windows-1251\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n%x\r\n%s\r\n0\r\n\r\n", (unsigned int)strlen(cmd), cmd);
 	send(*ns, head, strlen(head), 0);
 	Sleep(500);
 #ifdef LINUX
@@ -2431,7 +2433,7 @@ void error_thread_exit(MYSQL * const mysql, SOCKET * const ns, char const * cons
 
 	fprintf(stderr, "%s\n", err_text);
 	//выход (либо сообщение об ошибке)
-	sprintf_s(head, sizeof(head), "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=windows-1251\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n%x\r\n%s\r\n0\r\n\r\n", strlen(err_text), err_text);
+	sprintf_s(head, sizeof(head), "HTTP/1.1 200 OK\r\nContent-Type: text/html; charset=windows-1251\r\nTransfer-Encoding: chunked\r\nConnection: close\r\n\r\n%x\r\n%s\r\n0\r\n\r\n", (unsigned int)strlen(err_text), err_text);
 	send(*ns, head, strlen(head), 0);
 	Sleep(500);
 #ifdef LINUX
