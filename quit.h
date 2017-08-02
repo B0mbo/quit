@@ -33,7 +33,7 @@
 #define WORD unsigned short
 #define DWORD unsigned int
 #define closesocket close
-#define LPVOID void* 
+#define LPVOID void*
 extern int h_errno;
 #endif
 
