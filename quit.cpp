@@ -1530,12 +1530,12 @@ WHERE b.tab_name='%s'", main_table);
 						case 12: //поле
 							if(row[j] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld size=%d onChange=\"myreq('%s_%d')\" type='text' value='%s'></td>",
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d size=%d onChange=\"myreq('%s_%d')\" type='text' value='%s'></td>",
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
-																					 (strlen(row[j])/tab_col[j]->col_size>3)?(strlen(row[j])/tab_col[j]->col_size)+2:3, //высота
+																					 (int)(strlen(row[j])/tab_col[j]->col_size>3)?(strlen(row[j])/tab_col[j]->col_size)+2:3, //высота
 																					 tab_col[j]->col_size,//15, //ширина
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
@@ -1558,12 +1558,12 @@ WHERE b.tab_name='%s'", main_table);
 						case 13: //замок
 							if(row[j] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld size=%d onChange=\"myreq('%s_%d')\" type='text' disabled='disabled' value='%s'></td>",
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d size=%d onChange=\"myreq('%s_%d')\" type='text' disabled='disabled' value='%s'></td>",
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
-																					 (strlen(row[j])/tab_col[j]->col_size>3)?(strlen(row[j])/tab_col[j]->col_size)+2:3, //высота
+																					 (int)(strlen(row[j])/tab_col[j]->col_size>3)?(strlen(row[j])/tab_col[j]->col_size)+2:3, //высота
 																					 tab_col[j]->col_size,//15, //ширина
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
@@ -1591,7 +1591,7 @@ WHERE b.tab_name='%s'", main_table);
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 (max>0)?max:1,
-																					 (strlen(tab_col[j]->col_hat)>(unsigned int)(tab_col[j]->col_size))?(strlen(tab_col[j]->col_hat)):tab_col[j]->col_size,
+																					 (int)(strlen(tab_col[j]->col_hat)>(unsigned int)(tab_col[j]->col_size))?(strlen(tab_col[j]->col_hat)):tab_col[j]->col_size,
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 make_lt_gt(row[j]));
@@ -1749,7 +1749,7 @@ WHERE b.tab_name='%s'", main_table);
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 (max>0)?max:1,
-																					 (strlen(tab_col[j]->col_hat)>(unsigned int)(tab_col[j]->col_size))?(strlen(tab_col[j]->col_hat)):tab_col[j]->col_size,
+																					 (int)(strlen(tab_col[j]->col_hat)>(unsigned int)(tab_col[j]->col_size))?(strlen(tab_col[j]->col_hat)):tab_col[j]->col_size,
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 "");
@@ -1803,12 +1803,12 @@ WHERE b.tab_name='%s'", main_table);
 						case 10: //пароль
 							if(row[j] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld cols=%d onChange=\"myreq('%s_%d')\" type='password' value='%s'></td>",
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d cols=%d onChange=\"myreq('%s_%d')\" type='password' value='%s'></td>",
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
-																					 (strlen(row[j])/tab_col[j]->col_size>3)?(strlen(row[j])/tab_col[j]->col_size)+2:3, //высота
+																					 (int)(strlen(row[j])/tab_col[j]->col_size>3)?(strlen(row[j])/tab_col[j]->col_size)+2:3, //высота
 																					 tab_col[j]->col_size,//15, //ширина
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
@@ -1997,12 +1997,12 @@ WHERE b.tab_name='%s'", main_table);
 						case 12: //поле
 							if(row[1] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld width=%d onChange=\"myreq('%s_%d')\" type='text' value='%s'></td>",
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d width=%d onChange=\"myreq('%s_%d')\" type='text' value='%s'></td>",
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
-																					 (strlen(row[1])/tab_col[j]->col_size>3)?(strlen(row[1])/tab_col[j]->col_size)+2:3, //высота
+																					 (int)(strlen(row[1])/tab_col[j]->col_size>3)?(strlen(row[1])/tab_col[j]->col_size)+2:3, //высота
 																					 tab_col[j]->col_size,//15, //ширина
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
@@ -2025,12 +2025,12 @@ WHERE b.tab_name='%s'", main_table);
 						case 13: //замок
 							if(row[1] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld width=%d onChange=\"myreq('%s_%d')\" type='text' disabled='disabled' value='%s'></td>",
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d width=%d onChange=\"myreq('%s_%d')\" type='text' disabled='disabled' value='%s'></td>",
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
-																					 (strlen(row[1])/tab_col[j]->col_size>3)?(strlen(row[1])/tab_col[j]->col_size)+2:3, //высота
+																					 (int)(strlen(row[1])/tab_col[j]->col_size>3)?(strlen(row[1])/tab_col[j]->col_size)+2:3, //высота
 																					 tab_col[j]->col_size,//15, //ширина
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
@@ -2268,11 +2268,11 @@ WHERE b.tab_name='%s'", main_table);
 						case 10: //пароль
 							if(row[1] != NULL)
 							{
-								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%ld cols=%d onChange=\"myreq('%s_%d')\" type='password' value='%s'></td>", tab_col[j]->name,
+								sprintf_s(head, sizeof(head), "<td><input form='frm' id='%s_%d' name='%s[%d]' rows=%d cols=%d onChange=\"myreq('%s_%d')\" type='password' value='%s'></td>", tab_col[j]->name,
 																					 atoi(row[0]),
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
-																					 (strlen(row[1])/tab_col[j]->col_size>3)?(strlen(row[1])/tab_col[j]->col_size)+2:3, //высота
+																					 (int)(strlen(row[1])/tab_col[j]->col_size>3)?(strlen(row[1])/tab_col[j]->col_size)+2:3, //высота
 																					 tab_col[j]->col_size,//15, //ширина
 																					 tab_col[j]->name,
 																					 atoi(row[0]),
