@@ -5,6 +5,9 @@
 #ifdef WIN32
 #pragma comment(lib, "ws2_32.lib")
 #pragma comment(lib, "mysqlclient.lib")
+#else
+#define TRUE 1
+#define FALSE 0
 #endif
 
 #define MAX_HEAD_SIZE 40960
@@ -373,6 +376,7 @@ ProcessingThread(void *lpParams)
 	mysql_query(&mysql, "SET @@character_set_connection='cp1251'");
 	mysql_query(&mysql, "SET @@character_set_result='cp1251'");
 	mysql_query(&mysql, "SET @@character_set_client='cp1251'");
+	mysql_query(&mysql, "SET sql_mode=''");
 //	mysql_query(&mysql, "set sql_mode='NO_BACKSLASH_ESCAPES'"); //чтобы MySQL не ругался на '\'
 
 	memset(buf, 0, sizeof(buf));
@@ -393,7 +397,6 @@ ProcessingThread(void *lpParams)
     pthread_exit(NULL);
 #endif
 	}
-  memset(next_table, 0, sizeof(next_table));
   fprintf(stderr, "\n\n%s\n\n", buf); //отладка!!!
   if(strncmp(buf, "POST ", 5) == 0)
   {
@@ -439,7 +442,7 @@ ProcessingThread(void *lpParams)
 
 	  //задаём название основной таблицы как название таблицы для перехода
 	  memset(next_table, 0, sizeof(next_table));
-	  strcpy_s(next_table, sizeof(next_table), main_table);
+	  strcpy_s(next_table, strlen(main_table), main_table);
 
 	  //получаем длину передпнного сообщения
 	  ptr = get_head_value(buf, "Content-Length: ");
@@ -488,7 +491,7 @@ ProcessingThread(void *lpParams)
 			if(strlen(cmd) > 0)
 			{
 				memset(next_table, 0, sizeof(next_table));
-				strcpy_s(next_table, sizeof(next_table), cmd); //если была задана таблица для перехода, запоминаем её имя
+				strcpy_s(next_table, strlen(cmd), cmd); //если была задана таблица для перехода, запоминаем её имя
 			}
 		}
 
@@ -504,7 +507,7 @@ ProcessingThread(void *lpParams)
 		memset(command_list, 0, sizeof(command_list));
 		if(get_some_value(ptr, "command_list", cmd)) //получаем список команд
 		{
-			strcpy_s(command_list, sizeof(command_list), cmd);
+			strcpy_s(command_list, strlen(cmd), cmd);
 
 			if(strstr(command_list, "create_new_table") != NULL)
 			{
@@ -523,7 +526,7 @@ ProcessingThread(void *lpParams)
 		  if(len < 0) continue;
 		  ptr = ptr + id_value_data.index;
 		  memset(cmd, 0, sizeof(cmd));
-		  if(strcpy_s(main_table, 11, "server_info") == 0 && strncmp(id_value_data.name, "addr", 4) == 0) //если меняется адрес сервера
+		  if(strncmp(main_table, "server_info", 11) == 0 && strncmp(id_value_data.name, "addr", 4) == 0) //если меняется адрес сервера
 		  {
 			  //проверяем, рабочий ли этот адрес
 			  fprintf(stderr, "checking...\n");
@@ -641,7 +644,7 @@ ProcessingThread(void *lpParams)
 		if( num_col != 0 && (row_col = mysql_fetch_row(res_col)) != NULL && row_col[0] != NULL)
 		{
 			memset(next_table, 0, sizeof(next_table));
-			strcpy_s(next_table, sizeof(next_table), row_col[0]);
+			strcpy_s(next_table, strlen(row_col[0]), row_col[0]);
 		}
 		if(num_col > 0)
 		{
@@ -651,7 +654,7 @@ ProcessingThread(void *lpParams)
 
 	//заменяем основную таблицу на таблицу для перехода
 	memset(main_table, 0, sizeof(main_table));
-	strcpy_s(main_table, sizeof(main_table), next_table);
+	strcpy_s(main_table, strlen(next_table), next_table);
 
 	memset(cmd, 0, sizeof(cmd));
 	//здесь получаем описание сервера
@@ -708,7 +711,7 @@ ProcessingThread(void *lpParams)
 	  memset(main_table, 0, sizeof(main_table));
 	  if(ptr[0] == ' ')
 	  {
-	    strcpy_s(main_table, sizeof(main_table), row_srv[2]);
+	    strcpy_s(main_table, strlen(row_srv[2]), row_srv[2]);
 	  }
 	  else
 	  {
@@ -754,7 +757,7 @@ ORDER BY a.col_num", main_table);
 			//имя столбца
 			tab_col[i]->name = (char *) malloc(strlen(row_col[1])+1);
 			memset(tab_col[i]->name, 0, strlen(row_col[1])+1);
-			strcpy_s(tab_col[i]->name, MAX_COLUMNS_IN_TABLE, row_col[1]);
+			strcpy_s(tab_col[i]->name, strlen(row_col[1]), row_col[1]);
 
 			//тип столбца
 			tab_col[i]->type = atoi(row_col[2]);
@@ -762,17 +765,17 @@ ORDER BY a.col_num", main_table);
 			//код строки
 			tab_col[i]->html_code = (char *) malloc(strlen(row_col[3])+1);
 			memset(tab_col[i]->html_code, 0, strlen(row_col[3])+1);
-			strcpy_s(tab_col[i]->html_code, MAX_COLUMNS_IN_TABLE, row_col[3]);
+			strcpy_s(tab_col[i]->html_code, strlen(row_col[3]), row_col[3]);
 
 			//код заголовка столбца
 			tab_col[i]->html_hat = (char *) malloc(strlen(row_col[4])+1);
 			memset(tab_col[i]->html_hat, 0, strlen(row_col[4])+1);
-			strcpy_s(tab_col[i]->html_hat, MAX_COLUMNS_IN_TABLE, row_col[4]);
+			strcpy_s(tab_col[i]->html_hat, strlen(row_col[4]), row_col[4]);
 
 			//заголовок столбца в таблице
 			tab_col[i]->col_hat = (char *) malloc(strlen(row_col[5])+1);
 			memset(tab_col[i]->col_hat, 0, strlen(row_col[5])+1);
-			strcpy_s(tab_col[i]->col_hat, MAX_COLUMNS_IN_TABLE, row_col[5]);
+			strcpy_s(tab_col[i]->col_hat, strlen(row_col[5]), row_col[5]);
 
 			//ширина столбца в таблице
 			tab_col[i]->col_size = atoi(row_col[6]);
@@ -4175,7 +4178,6 @@ void delete_table(char const * const table_name, MYSQL * const pmysql, SOCKET * 
 	{
 		free(cmd);
 		mysql_error_thread_exit(pmysql, ns);
-		return;
 	}
 	memset(cmd, 0, MAX_BUFF_SIZE);
 
@@ -4185,7 +4187,6 @@ void delete_table(char const * const table_name, MYSQL * const pmysql, SOCKET * 
 	{
 		free(cmd);
 		mysql_error_thread_exit(pmysql, ns);
-		return;
 	}
 	memset(cmd, 0, MAX_BUFF_SIZE);
 
@@ -4195,7 +4196,6 @@ void delete_table(char const * const table_name, MYSQL * const pmysql, SOCKET * 
 	{
 		free(cmd);
 		mysql_error_thread_exit(pmysql, ns);
-		return;
 	}
 	memset(cmd, 0, MAX_BUFF_SIZE);
 
@@ -4205,7 +4205,6 @@ void delete_table(char const * const table_name, MYSQL * const pmysql, SOCKET * 
 	{
 		free(cmd);
 		mysql_error_thread_exit(pmysql, ns);
-		return;
 	}
 	memset(cmd, 0, MAX_BUFF_SIZE);
 
@@ -4215,7 +4214,6 @@ void delete_table(char const * const table_name, MYSQL * const pmysql, SOCKET * 
 	{
 		free(cmd);
 		mysql_error_thread_exit(pmysql, ns);
-		return;
 	}
 
 	//удаляем саму таблицу
@@ -4224,7 +4222,6 @@ void delete_table(char const * const table_name, MYSQL * const pmysql, SOCKET * 
 	{
 		free(cmd);
 		mysql_error_thread_exit(pmysql, ns);
-		return;
 	}
 
 	free(cmd);
