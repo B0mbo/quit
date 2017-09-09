@@ -397,6 +397,7 @@ ProcessingThread(void *lpParams)
     pthread_exit(NULL);
 #endif
 	}
+  memset(next_table, 0, sizeof(next_table));
   fprintf(stderr, "\n\n%s\n\n", buf); //отладка!!!
   if(strncmp(buf, "POST ", 5) == 0)
   {
@@ -654,7 +655,7 @@ ProcessingThread(void *lpParams)
 
 	//заменяем основную таблицу на таблицу для перехода
 	memset(main_table, 0, sizeof(main_table));
-	strcpy_s(main_table, strlen(next_table), next_table);
+	strcpy_s(main_table, sizeof(main_table), next_table);
 
 	memset(cmd, 0, sizeof(cmd));
 	//здесь получаем описание сервера
@@ -757,7 +758,7 @@ ORDER BY a.col_num", main_table);
 			//имя столбца
 			tab_col[i]->name = (char *) malloc(strlen(row_col[1])+1);
 			memset(tab_col[i]->name, 0, strlen(row_col[1])+1);
-			strcpy_s(tab_col[i]->name, strlen(row_col[1]), row_col[1]);
+			strcpy_s(tab_col[i]->name, strlen(row_col[1])+1, row_col[1]);
 
 			//тип столбца
 			tab_col[i]->type = atoi(row_col[2]);
@@ -765,17 +766,17 @@ ORDER BY a.col_num", main_table);
 			//код строки
 			tab_col[i]->html_code = (char *) malloc(strlen(row_col[3])+1);
 			memset(tab_col[i]->html_code, 0, strlen(row_col[3])+1);
-			strcpy_s(tab_col[i]->html_code, strlen(row_col[3]), row_col[3]);
+			strcpy_s(tab_col[i]->html_code, strlen(row_col[3])+1, row_col[3]);
 
 			//код заголовка столбца
 			tab_col[i]->html_hat = (char *) malloc(strlen(row_col[4])+1);
 			memset(tab_col[i]->html_hat, 0, strlen(row_col[4])+1);
-			strcpy_s(tab_col[i]->html_hat, strlen(row_col[4]), row_col[4]);
+			strcpy_s(tab_col[i]->html_hat, strlen(row_col[4])+1, row_col[4]);
 
 			//заголовок столбца в таблице
 			tab_col[i]->col_hat = (char *) malloc(strlen(row_col[5])+1);
 			memset(tab_col[i]->col_hat, 0, strlen(row_col[5])+1);
-			strcpy_s(tab_col[i]->col_hat, strlen(row_col[5]), row_col[5]);
+			strcpy_s(tab_col[i]->col_hat, strlen(row_col[5])+1, row_col[5]);
 
 			//ширина столбца в таблице
 			tab_col[i]->col_size = atoi(row_col[6]);
