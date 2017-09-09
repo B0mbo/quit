@@ -3,11 +3,11 @@
 #
 
 
-GPP	=g++
+GPP	=gcc
 OUTFILE	=quit
 PRJNAME =quit
 
 CFLAGS	=-Wall -m32 -DLINUX -I"/usr/include" -L"/usr/lib" -pthread -L"/usr/lib/i386-linux-gnu" -lmysqlclient
 
 all:
-	$(GPP) -o ./$(PRJNAME) ./$(PRJNAME).cpp $(CFLAGS)
+	$(GPP) -o ./$(PRJNAME) ./$(PRJNAME).c $(CFLAGS)

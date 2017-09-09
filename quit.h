@@ -5,10 +5,10 @@
 
 #include<stdio.h>
 #ifdef WIN32
-#include<windows.h>
+#include<winsock2.h>
 #include<Commctrl.h>
 #include<Strsafe.h>
-#include<winuser.h>
+//#include<winuser.h>
 #include<mysql.h>
 #define socklen_t int
 #endif
@@ -28,6 +28,8 @@
 #define SOCKET int
 #define strcat_s(a,b,c) strncat(a,c,b)
 #define strcpy_s(a,b,c) strncpy(a,c,b)
+#define sscanf_s(a,b,c,d) sscanf(a,b,c)
+#define strtok_s(a,b,c) strtok(a,b)
 #define sprintf_s snprintf
 #define Sleep(a) usleep(a*1000)
 #define WORD unsigned short
