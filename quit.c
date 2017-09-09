@@ -518,6 +518,7 @@ ProcessingThread(void *lpParams)
 
 		len = strlen(ptr); //т.к. содержимое ptr может измениться
 		
+		memset(&id_value_data, 0, sizeof(id_value_data));
 		while(len > 0)
 		{
 		  len = get_id_value(ptr, &id_value_data); //функция определяет id изменяемого элемента, имя столбца и новое значение.
@@ -572,8 +573,10 @@ ProcessingThread(void *lpParams)
 			  hp = gethostbyname(main_server);
 			  if(hp == NULL)
 			  {
-				  free(id_value_data.name);
-				  free(id_value_data.value);
+				  if(id_value_data.name != NULL)
+					free(id_value_data.name);
+				  if(id_value_data.value != NULL)
+					free(id_value_data.value);
 				  fprintf(stderr, "error: gethostbyname()\n");
 				  fprintf(stderr, "The check is failed\n");
 				  closesocket(ns);
@@ -596,8 +599,10 @@ ProcessingThread(void *lpParams)
 
 				  sprintf_s(cmd, sizeof(cmd), "UPDATE %s SET %s=\"%s\" WHERE id=%d", main_table, id_value_data.name, id_value_data.value, id_value_data.id);
 				  fprintf(stderr, "%s\n", cmd);
-				  free(id_value_data.name);
-				  free(id_value_data.value);
+				  if (id_value_data.name != NULL)
+					  free(id_value_data.name);
+				  if (id_value_data.value != NULL)
+					  free(id_value_data.value);
  				  if(mysql_query(&mysql, cmd) != 0)
 				  {
 					fprintf(stderr, "error mysql_query() : %s\n", mysql_error(&mysql));
@@ -605,8 +610,10 @@ ProcessingThread(void *lpParams)
 			  }
 			  else
 			  {
-				  free(id_value_data.name);
-				  free(id_value_data.value);
+				  if (id_value_data.name != NULL)
+					  free(id_value_data.name);
+				  if (id_value_data.value != NULL)
+					  free(id_value_data.value);
 			      fprintf(stderr, "The check is failed (connect())\n");
 			  }
 			  //удаляем сокет
@@ -616,8 +623,10 @@ ProcessingThread(void *lpParams)
 		  {
 			  sprintf_s(cmd, sizeof(cmd), "UPDATE %s SET %s=\"%s\" WHERE id=%d", main_table, id_value_data.name, id_value_data.value, id_value_data.id);
 			  fprintf(stderr, "%s\n", cmd);
-			  free(id_value_data.name);
-			  free(id_value_data.value);
+			  if (id_value_data.name != NULL)
+				  free(id_value_data.name);
+			  if (id_value_data.value != NULL)
+				  free(id_value_data.value);
 			  if(mysql_query(&mysql, cmd) != 0)
 			  {
 				fprintf(stderr, "error mysql_query() : %s\n", mysql_error(&mysql));
@@ -693,8 +702,10 @@ ProcessingThread(void *lpParams)
 
 	if(strncmp(buf, "GET /favicon.ico", 16) == 0)
 	{
-	  free(id_value_data.name);
-	  free(id_value_data.value);
+	  //if (id_value_data.name != NULL)
+		//free(id_value_data.name);
+	  //if (id_value_data.value != NULL)
+		//free(id_value_data.value);
 #ifdef LINUX
 	  shutdown(ns, SHUT_RDWR);
 #endif
